@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalaxianEmpire - Space arcade in style of Galaxian with RPG elements.</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="retro_styles.css">
+    <link rel="icon" type="image/png" href="icon.ico">
+    <!-- Подключаем шрифтовые иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Ретро-футуристические эффекты фона -->
+    <div class="retro-bg"></div>
+    <!-- <div class="grid-bg"></div> -->
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    <div class="crt-effect"></div>
+    <div class="scanline"></div>
+    
+    <!-- Заголовок -->
+    <header class="header" id="head">
+        <h1>GalaxianEmpire</h1>
+    </header>
+    
+    <!-- Основной контент -->
+    <div class="main-content" id="titleScreen">
+        <div class="logo-container">
+            <div class="logo-text">
+                <div class="galaxian">Build Your</div>
+                <div class="empire">Empire</div>
+            </div>
+            <div class="logo-glow"></div>
+        </div>
+        
+        <p class="tagline">Explore the galaxy! Conquer planets! Rule your empire!</p>
+        
+        <div class="hologram-container float">
+            <div class="hologram">
+                <img src="../img/ship.png" alt="Космический корабль">
+            </div>
+        </div>
+        
+        <button id="start-game" class="retro-button pulse">Defend your Planet</button>
+    </div>
+    
+    <!-- Game container with canvas -->
+    <div id="game-container" style="display: none;">
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- Игровой интерфейс (скрыт по умолчанию) -->
+    <div class="stats-container" id="game-ui" style="display: none;">
+        <div class="level-display">Level: <span id="level">1</span></div>
+        <div id="score-display">Score: <span id="score-value">0</span></div>
+        <div id="lives-display">HP: <span id="hp">3</span></div>
+        <!--<div class="pause-button"><i class="fas fa-pause"></i></div>-->
+    </div>
+    
+    <!-- Мета-игровой интерфейс (скрыт по умолчанию) -->
+    <div class="meta-game-container">
+        <div class="meta-section">
+            <h3>Ресурсы</h3>
+            <div class="resource-display">
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-gem"></i></div>
+                    <div class="resource-value">1,250</div>
+                    <div>Кристаллы</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="resource-value">3,780</div>
+                    <div>Энергия</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-microchip"></i></div>
+                    <div class="resource-value">890</div>
+                    <div>Технологии</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="meta-section">
+            <h3>Планеты</h3>
+            <div class="planet-grid">
+                <div class="planet-item">
+                    <div class="planet-icon" style="background: radial-gradient(circle, #4da6ff 0%, #0066cc 100%);"></div>
+                    <div class="planet-name">Аквария</div>
+                    <div class="planet-status">Завоёвана</div>
+                </div>
+                <div class="planet-item">
+                    <div class="planet-icon" style="background: radial-gradient(circle, #ff5e5e 0%, #cc0000 100%);"></div>
+                    <div class="planet-name">Пирос</div>
+                    <div class="planet-status">Не исследована</div>
+                </div>
+                <div class="planet-item">
+                    <div class="planet-icon" style="background: radial-gradient(circle, #66ff66 0%, #00cc00 100%);"></div>
+                    <div class="planet-name">Терравия</div>
+                    <div class="planet-status">Союзник</div>
+                </div>
+                <div class="planet-item">
+                    <div class="planet-icon" style="background: radial-gradient(circle, #cc66ff 0%, #9900cc 100%);"></div>
+                    <div class="planet-name">Нексус</div>
+                    <div class="planet-status">Враждебная</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <!-- Оверлей паузы (скрыт по умолчанию) -->
+    <div class="overlay" id="pause-overlay">
+        <div class="overlay-content">
+            <h2>Пауза</h2>
+            <button class="overlay-button" id="resume-button">Продолжить</button>
+            <button class="overlay-button" id="restart-button">Начать заново</button>
+            <button class="overlay-button" id="exit-button">Выйти в меню</button>
+        </div>
+    </div>
+    
+    <!-- Нижняя навигация -->
+    <nav class="nav-bar" id="bottom-menu">
+        <a href="#" class="nav-item" id="fleet-nav">
+            <div class="icon"><i class="fa-solid fa-earth-europe"></i></div>
+            <div class="label">My Planet</div>
+        </a>
+        <a href="#" class="nav-item" id="market-nav">
+            <div class="icon"><i class="fa-solid fa-shop"></i></div>
+            <div class="label">Market</div>
+        </a>
+        <a href="#" class="nav-item" id="council-nav">
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <div class="label">Council</div>
+        </a>
+        <a href="#" class="nav-item" id="tasks-nav">
+            <div class="icon"><i class="fas fa-tasks"></i></div>
+            <div class="label">Task-bar</div>
+        </a>
+    </nav>
+    
+    <!-- Подключение скриптов -->
+    <script src="../scripts/game.js"></script>
+    <script src="../scripts/galaxy_map.js"></script>
+    <script src="../scripts/pae_system.js"></script>
+    <script src="../scripts/reputation_system.js"></script>
+    <script src="../scripts/integration.js"></script>
+    <script src="../scripts/telegram_integration.js"></script>
+    
+    <script>
+        // Глобальный объект игры
+        var game = {
+            init: function() {
+                // Инициализация игры
+                return true;
+            },
+            start: function() {
+                // Запуск игры
+                document.getElementById('game-container').style.display = 'block';
+                document.getElementById('game-ui').style.display = 'block';
+                // Скрываем навигацию
+                document.getElementById("bottom-menu").style.display = 'none';
+                document.getElementById("head").style.display = 'none';
+                // Настройка canvas
+                var canvas = document.getElementById('game-canvas');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                console.log("Game started!");
+            }
+        };
+        
+        // Retro startup animation
+        function playStartupAnimation() {
+            document.body.style.overflow = 'hidden';
+            // Создаем startup screen
+            const startupScreen = document.createElement('div');
+            startupScreen.className = 'startup-screen';
+            startupScreen.innerHTML = `
+                <div class="startup-content">
+                    <p class="startup-text">INITIALIZING SYSTEM...</p>
+                    <div class="loading-bar">
+                        <div class="loading-progress"></div>
+                    </div>
+                    <p class="startup-info">RETRO-GALAXIAN OS v1.0</p>
+                    <p class="startup-info">© 2025 MrBengalord</p>
+                </div>
+            `;
+            document.body.appendChild(startupScreen);
+            
+            // Анимируем progress bar
+            setTimeout(() => {
+                const loadingProgress = document.querySelector('.loading-progress');
+                if (loadingProgress) {
+                    loadingProgress.style.width = '100%';
+                }
+            }, 100);
+            
+            // Удаляем startup screen через 2.5 секунды
+            setTimeout(() => {
+                startupScreen.classList.add('fade-out');
+                setTimeout(() => {
+                startupScreen.remove();
+                }, 500);
+            }, 2500);
+        }
+        
+        // Добавляем динамические стили для анимации
+        function addDynamicStyles() {
+            const styleElement = document.createElement('style');
+            styleElement.textContent = `
+            .crt-flicker {
+                animation: flicker 0.3s infinite;
+            }
+            
+            @keyframes flicker {
+                0% { opacity: 1; }
+                25% { opacity: 0.8; }
+                50% { opacity: 0.9; }
+                75% { opacity: 0.7; }
+                100% { opacity: 1; }
+            }
+            
+            .crt-transition {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #000;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 9999;
+                transition: all 0.3s ease;
+            }
+            
+            .crt-transition.active {
+                opacity: 0.7;
+            }
+            
+            .scan-active::before {
+                background: repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 255, 255, 0.1),
+                    rgba(255, 255, 255, 0.1) 2px,
+                    transparent 2px,
+                    transparent 4px
+                );
+                animation: scan 0.5s linear infinite;
+            }
+            
+            @keyframes scan {
+                0% { background-position: 0 0; }
+                100% { background-position: 0 100px; }
+            }
+            
+            .startup-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                transition: opacity 0.5s ease;
+                opacity: 1;
+            }
+            
+            .startup-screen.fade-out {
+                opacity: 0;
+            }
+            
+            .startup-content {
+                text-align: center;
+                color: #4aff91;
+                font-family: 'VT323', monospace;
+            }
+            
+            .startup-text {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+            
+            .loading-bar {
+                width: 300px;
+                height: 20px;
+                background-color: #333;
+                border: 2px solid #4aff91;
+                margin: 0 auto 20px;
+                overflow: hidden;
+            }
+            
+            .loading-progress {
+                height: 100%;
+                width: 0;
+                background-color: #4aff91;
+                transition: width 2s ease-in-out;
+            }
+            
+            .startup-info {
+                font-size: 1rem;
+                margin-bottom: 10px;
+                opacity: 0.7;
+            }
+            
+            .fade-in {
+                animation: fadeIn 1s ease forwards;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `;
+            document.head.appendChild(styleElement);
+        }
+        
+        // Инициализация при загрузке DOM
+        window.addEventListener('DOMContentLoaded', function() {
+            addDynamicStyles();
+            playStartupAnimation();
+            
+            // Трекер нажатых клавиш
+            var KEY_STATUS = {};
+            document.addEventListener('keydown', function(e) {
+                KEY_STATUS[e.code] = true;
+            });
+            document.addEventListener('keyup', function(e) {
+                KEY_STATUS[e.code] = false;
+            });
+            
+            // Кнопка старта игры
+            document.getElementById('start-game').addEventListener('click', function() {
+                document.getElementById('titleScreen').style.display = 'none';
+                game.start();
+            });
+            
+            // Навигационные обработчики
+            const navHandlers = {
+                'fleet-nav': 'Мой Флот',
+                'market-nav': 'Рынок',
+                'council-nav': 'Совет',
+                'tasks-nav': 'Задания'
+            };
+            
+            for (const [id, text] of Object.entries(navHandlers)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        alert(`Переход в раздел "${text}"`);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
